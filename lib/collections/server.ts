@@ -39,44 +39,55 @@ const EMPTY_PAGE_INFO = {
 interface CollectionCategory {
   description: string;
   handle: string;
+  image: string;
   title: string;
 }
 
+// Collection imagery: AI concept shots (see ai-concepts/). Two collections share
+// one shot when both of their products appear in it. The image files live in
+// public/images/collections/ and are uploaded to the repo separately from code
+// pushes, which carry text only.
 const COLLECTION_CATEGORIES: CollectionCategory[] = [
   {
     description:
       "Modular organizers, soft pouches, and rigid-frame caddies for totes, weekenders, and everyday carry.",
     handle: "bags-carry",
+    image: "/images/collections/bags-carry.webp",
     title: "Bags & Carry",
   },
   {
     description:
       "Tap handles, coaster sets, and dimensional signs branded for cafes, breweries, tasting rooms, and hotels.",
     handle: "business-hospitality",
+    image: "/images/collections/business-hospitality.webp",
     title: "Business & Hospitality",
   },
   {
     description:
       "Counter pieces and desk organizers that put a local shop's brand where customers can see it.",
     handle: "office-retail",
+    image: "/images/collections/desk-workshop.webp",
     title: "Office & Retail",
   },
   {
     description:
       "Replacement brackets, clips, and knobs remade in engineering filament when the original is discontinued.",
     handle: "parts-repair",
+    image: "/images/collections/desk-workshop.webp",
     title: "Parts & Repair",
   },
   {
     description:
       "One-at-a-time plaques and awards with foil-transfer marks for tournaments, weddings, and milestones.",
     handle: "awards-events",
+    image: "/images/collections/awards-outdoors.webp",
     title: "Awards & Events",
   },
   {
     description:
       "Clips, strap adjusters, and hangers in tough carbon-fiber blends for trail and golf gear.",
     handle: "outdoor",
+    image: "/images/collections/awards-outdoors.webp",
     title: "Outdoor",
   },
 ];
@@ -90,7 +101,12 @@ function buildCollection(category: CollectionCategory): Collection {
     description: category.description,
     handle: category.handle,
     id: `local-collection-${category.handle}`,
-    image: null,
+    image: {
+      altText: `${category.title} collection image`,
+      height: 1280,
+      url: category.image,
+      width: 1920,
+    },
     path: `/collections/${category.handle}`,
     seo: { description: category.description, title: category.title },
     title: category.title,
@@ -154,12 +170,13 @@ export async function getCollectionsListing(
 
   const cards = getLocalProductCards();
   const collections = COLLECTION_CATEGORIES.map((category) => {
+    const built = buildCollection(category);
     const thumbnailCard = cards.find(
       (card) => PRODUCT_CATEGORIES.get(card.handle) === category.title,
     );
     return {
-      ...buildCollection(category),
-      thumbnail: thumbnailCard?.featuredImage ?? null,
+      ...built,
+      thumbnail: built.image ?? thumbnailCard?.featuredImage ?? null,
       thumbnailProductId: thumbnailCard?.id ?? null,
     };
   });

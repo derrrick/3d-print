@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { type ReactNode, Suspense } from "react";
 
 import { CollectionViewedTracker } from "@/components/analytics/trackers";
@@ -111,6 +112,17 @@ function CollectionHeader({
     <>
       <BreadcrumbSchema items={breadcrumbItems} />
       <CollectionSchema collection={{ handle, title, description, updatedAt }} />
+      {collection.image ? (
+        <div className="relative aspect-[16/9] overflow-hidden rounded-lg">
+          <Image
+            alt={collection.image.altText}
+            className="object-cover"
+            fill
+            sizes="100vw"
+            src={collection.image.url}
+          />
+        </div>
+      ) : null}
       <div>
         <h1 className="text-3xl sm:text-4xl md:text-5xl">
           <Link href={`/collections/${handle}`}>{title}</Link>
